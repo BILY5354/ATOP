@@ -3,6 +3,7 @@ import os
 from data.getFilePath import get_file_path
 from pathlib import Path
 
+
 def get_dbData(targetDir):
     dbFiles_path_dict = get_file_path(targetDir)
     mul_version_defects_dict = {}
@@ -10,7 +11,7 @@ def get_dbData(targetDir):
         dbFile_path_list = dbFiles_path_dict[data_set]
         for db_file_path in dbFile_path_list:
             db_file_path_split = db_file_path.split('\\')
-            #版本号
+            # 版本号
             ver_id = db_file_path_split[-2]
             db_file_path = Path(db_file_path)
             sql = "select defects from REP_INST LIMIT 1"
@@ -18,7 +19,7 @@ def get_dbData(targetDir):
                 result_sql = execute_sql(db_file_path, sql)[0]
                 file_defects_list = []
                 defects = result_sql[0]
-                if(defects == '' or defects == None):
+                if (defects == '' or defects == None):
                     print('报告非正常结束,defects 信息不全')
                     break
                 defects_list = defects.split(";")
@@ -32,14 +33,14 @@ def get_dbData(targetDir):
                         defect_name = defect_list[3]
                         defect_id = defect_list[2]
                         name_code = defect_name+'('+defect_code+')'
-                        #{'id': '1', 'name': '基准点(REF)', 'ver': [{ghgh:3}, {gfgff:3}]}
+                        # {'id': '1', 'name': '基准点(REF)', 'ver': [{ghgh:3}, {gfgff:3}]}
                         defect_dict['id'] = defect_id
                         defect_dict['name'] = name_code
                         defect_count = int(defect_list[5])
                         ver_name_count_dict[ver_id] = defect_count
                         ver_defect_list.append(ver_name_count_dict)
                         defect_dict['ver'] = ver_defect_list
-                        file_defects_list.append(defect_dict) 
+                        file_defects_list.append(defect_dict)
                 mul_version_defects_dict[data_set] = file_defects_list
             else:
                 file_defect_data_list = []
@@ -48,7 +49,7 @@ def get_dbData(targetDir):
                 file_defects_list = []
                 defect_id_list = []
                 defects = result_sql[0]
-                if(defects == '' or defects == None):
+                if (defects == '' or defects == None):
                     print('报告非正常结束,defects 信息不全')
                     break
                 defects_list = defects.split(";")
@@ -79,12 +80,13 @@ def get_dbData(targetDir):
                             count = int(defect_split[2])
                             if (pre_id == id):
                                 ver_name_count_dict[ver_id] = count
-                                pre_ver_list.append(ver_name_count_dict)                        
+                                pre_ver_list.append(ver_name_count_dict)
+
     return mul_version_defects_dict
 
 
 def execute_sql(db_file_path, sql):
-    if(not os.path.isfile(db_file_path)):
+    if (not os.path.isfile(db_file_path)):
         return False
     conn = sqlite3.connect(db_file_path)
     # 设置一个text_factory，告诉decode()忽略此类错误(utf-8无法解读)
@@ -101,7 +103,5 @@ def execute_sql(db_file_path, sql):
     conn.commit()
     # 关闭连接
     conn.close()
+    
     return sql_result
-
-
-

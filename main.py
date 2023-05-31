@@ -7,10 +7,7 @@ from model.outputExcel import output_excel
 
 # 目标目录
 targetDir = r'\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3'
-#获取数据
-db_data = get_dbData(targetDir)
-#输出excel
-output_excel(db_data)
+
 
 
 
@@ -37,6 +34,8 @@ class MainWin:
 
     def Generate(self):
         print("生成excel")
+        db_data = get_dbData(targetDir) # #获取数据
+        output_excel(db_data) #输出excel
 
 
 

@@ -10,15 +10,6 @@ def get_file_path(targetDir):
             if "SaveFile.txt" in fpath:
                 savefiles.append(fpath)
 
-    """
-    # print(savefiles)
-    [
-        '\\\\192.168.0.11\\Data\\GeRun\\SecondaryWire\\4#\\VT报告文件db3\\20230522\\SaveFile.txt', 
-        '\\\\192.168.0.11\\Data\\GeRun\\SecondaryWire\\4#\\VT报告文件db3\\20230525\\SaveFile.txt', 
-        '\\\\192.168.0.11\\Data\\GeRun\\SecondaryWire\\4#\\VT报告文件db3\\20230525-1\\SaveFile.txt'
-    ]
-    """
-
     batchVerNu = {} #  { 批次号 : [版本1地址，版本2地址] }
     for sf in savefiles:
         # print(f'文件:{sf}')
@@ -41,9 +32,5 @@ def get_file_path(targetDir):
                     batchVerNu[batchNu].append(path)
                 else:
                     batchVerNu[batchNu].append(path) 
-    return batchVerNu
-    # for k,v in batchVerNu.items():
-    #     print(f'{k} {v}')
 
-    # with open('.\\batchVerData.txt','w',encoding='utf8') as f:
-    #     f.write(f'{batchVerNu}')
+    return batchVerNu

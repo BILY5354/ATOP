@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1055</width>
     <height>548</height>
    </rect>
   </property>
@@ -14,118 +14,119 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="Line" name="line">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>10</y>
-      <width>20</width>
-      <height>521</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="excelButton">
-    <property name="geometry">
-     <rect>
-      <x>820</x>
-      <y>50</y>
-      <width>141</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>18</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>生成Excel</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="pathLineEd">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>40</y>
-      <width>541</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="tempatesLineEd">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>110</y>
-      <width>541</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pathBut">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>40</y>
-      <width>101</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>16</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>选择目录</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="templatesBut">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>110</y>
-      <width>101</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>16</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>选择模板</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="horizontalSpacing">
+       <number>20</number>
+      </property>
+      <property name="bottomMargin">
+       <number>120</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QSplitter" name="splitter_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="handleWidth">
+         <number>20</number>
+        </property>
+        <widget class="QPushButton" name="pathBut">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>16</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>选择目录</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="templatesBut">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>16</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>选择模板</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSplitter" name="splitter">
+        <property name="lineWidth">
+         <number>1</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="handleWidth">
+         <number>20</number>
+        </property>
+        <widget class="QLineEdit" name="pathLineEd">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="tempatesLineEd">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="excelButton">
+        <property name="font">
+         <font>
+          <family>黑体</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>生成Excel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="textEdit"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1055</width>
      <height>23</height>
     </rect>
    </property>
