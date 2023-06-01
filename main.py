@@ -6,7 +6,7 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import Signal, QThread
 
 from model.outputExcel import output_excel
-from data.getDbData import get_dbData
+from data.getDbData import *
 
 
 # 目标目录
@@ -23,7 +23,7 @@ class Worker(QThread):
 
     # ! 后期这里需要修改 传入目录参数
     def run(self):
-        db_data = get_dbData(targetDir)  # 获取数据
+        db_data = get_db_defect_data(targetDir)  # 获取数据
         output_excel(db_data)  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 

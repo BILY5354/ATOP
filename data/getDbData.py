@@ -1,10 +1,13 @@
 import sqlite3
-import os
+import os,json
 from data.getFilePath import get_file_path
 from pathlib import Path
+from dateutil.parser import parse
+import time
+from functools import wraps
 
 
-def get_dbData(targetDir):
+def get_db_defect_data(targetDir):
     dbFiles_path_dict = get_file_path(targetDir)
     mul_version_defects_dict = {}
     for data_set in dbFiles_path_dict:
@@ -85,7 +88,17 @@ def get_dbData(targetDir):
     return mul_version_defects_dict
 
 
+def time_it(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs)
+        end = time.time()
+        print('用时:{}秒'.format(end-start))
+    return inner
+
 def execute_sql(db_file_path, sql):
+    start = time.time()
     if (not os.path.isfile(db_file_path)):
         return False
     conn = sqlite3.connect(db_file_path)
@@ -104,4 +117,44 @@ def execute_sql(db_file_path, sql):
     # 关闭连接
     conn.close()
     
+    end = time.time()
+    print('用时:{}秒'.format(end-start))
     return sql_result
+
+@time_it
+def get_yied_dur_data(targetDir):
+    dbFiles_path_dict = get_file_path(targetDir)
+    ver_yied_dur_dict = {}
+    for data_set in dbFiles_path_dict:
+        dbFile_path_list = dbFiles_path_dict[data_set]
+        mul_ver_data_list = []
+        for db_file_path in dbFile_path_list:
+            lot_yied_dur_list = [0,0,0]
+            db_file_path_split = db_file_path.split('\\')
+            # 版本号
+            ver_id = db_file_path_split[-2]
+            db_file_path = Path(db_file_path)
+            sql = "select startTime,endTime,runAttrib from REP_INST LIMIT 1"
+            print(db_file_path)
+            sql_res = execute_sql(db_file_path, sql)
+            result_sql = sql_res[0]
+            startTime = parse(result_sql[0])
+            endTime = parse(result_sql[1])
+            runAttrib_json = json.loads(result_sql[2])
+            fail_count = (int(runAttrib_json["FAIL"]) + int(runAttrib_json['ASSISTFAIL']))
+            good_count = (int(runAttrib_json["GOOD"]) + int(runAttrib_json['ASSISTPASS']))
+            total_count = fail_count + good_count
+            yied_float = good_count/total_count
+            yied = "%.2f%%" % (yied_float * 100)
+            duration_seconds = (endTime - startTime).seconds
+            m,s = divmod(duration_seconds,60)
+            duration = str(m) + '分' + str(s) + '秒'
+            lot_yied_dur_list[0] = ver_id
+            lot_yied_dur_list[1] = yied
+            lot_yied_dur_list[2] = duration
+            mul_ver_data_list.append(lot_yied_dur_list)
+            ver_yied_dur_dict[data_set] = mul_ver_data_list
+    print(ver_yied_dur_dict)
+    return ver_yied_dur_dict
+
+            
