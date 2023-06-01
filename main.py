@@ -1,6 +1,5 @@
 from PySide2.QtWidgets import QApplication, QFileDialog,QLineEdit,QMainWindow
 from PySide2.QtUiTools import QUiLoader
-import os
 import sys
 from data.getDbData import get_dbData
 from model.outputExcel import output_excel
