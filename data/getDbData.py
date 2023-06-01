@@ -154,6 +154,7 @@ def get_yied_dur_data(targetDir):
             lot_yied_dur_list[2] = duration
             mul_ver_data_list.append(lot_yied_dur_list)
             ver_yied_dur_dict[data_set] = mul_ver_data_list
+    print(ver_yied_dur_dict)
     return ver_yied_dur_dict
 
             

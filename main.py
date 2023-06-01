@@ -1,6 +1,6 @@
+import sys
 from PySide2.QtWidgets import QApplication, QFileDialog,QLineEdit,QMainWindow
 from PySide2.QtUiTools import QUiLoader
-import sys
 from data.getDbData import get_db_defect_data,get_yied_dur_data
 from model.outputExcel import output_excel
 
