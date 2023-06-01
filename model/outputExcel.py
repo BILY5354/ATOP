@@ -7,11 +7,12 @@ from openpyxl.styles.colors import Color
 
 
 def output_excel(mul_version_defects_dict):
-    outputPath = ".\\output"
-    nowTime = datetime.now().strftime('%Y/%m/%d_%H:%M:%S')
-    newFolderName = os.path.join(outputPath,nowTime)
-    os.makedirs(newFolderName)
-    EXCELPATH = f"{newFolderName}\\test1.xlsx"
+    # outputPath = ".\\output"
+    # nowTime = datetime.now().strftime('%Y/%m/%d_%H:%M:%S')
+    # newFolderName = os.path.join(outputPath,nowTime)
+    # os.makedirs(newFolderName)
+    # EXCELPATH = f"{newFolderName}\\test1.xlsx"
+    EXCELPATH = ".\\output\\test1.xlsx"
     GETDATA = mul_version_defects_dict
 
    # 将字典所有键存入列表中 存的是数据集名称
