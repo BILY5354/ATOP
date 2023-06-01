@@ -16,9 +16,9 @@ class MainWin:
     def __init__(self):
         # 从文件中加载UI定义
         self.ui = QUiLoader().load('ui/mainwin.ui')
-        self.initUI()
+        self.InitUI()
 
-    def initUI(self):
+    def InitUI(self):
         self.ui.pathLineEd.setText(targetDir) 
         
         self.ui.excelButton.clicked.connect(self.Generate)
@@ -36,6 +36,7 @@ class MainWin:
         print("生成excel")
         db_data = get_dbData(targetDir) # #获取数据
         output_excel(db_data) #输出excel
+        print("生成完成")
 
 
 
