@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QApplication, QFileDialog,QLineEdit,QMainWindow
 from PySide2.QtUiTools import QUiLoader
 import sys
-from data.getDbData import get_dbData
+from data.getDbData import get_db_defect_data,get_yied_dur_data
 from model.outputExcel import output_excel
 
 # 目标目录
@@ -16,7 +16,6 @@ class MainWin:
         # 从文件中加载UI定义
         self.ui = QUiLoader().load('ui/mainwin.ui')
         self.InitUI()
-
     def InitUI(self):
         self.ui.pathLineEd.setText(targetDir) 
         
@@ -33,8 +32,9 @@ class MainWin:
 
     def Generate(self):
         print("生成excel")
-        db_data = get_dbData(targetDir) # #获取数据
-        output_excel(db_data) #输出excel
+        db_defect_data = get_db_defect_data(targetDir) #获取缺陷数据
+        yied_dur_data_dict = get_yied_dur_data(targetDir)
+        output_excel(db_defect_data) #输出excel
         print("生成完成")
 
 
