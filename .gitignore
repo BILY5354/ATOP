@@ -1,1 +1,5 @@
-*.pyc
+output/test1.xlsx
+model/__pycache__
+output/test1.xlsx
+output
+model\__pycache__
