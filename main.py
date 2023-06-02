@@ -23,8 +23,9 @@ class Worker(QThread):
 
     # ! 后期这里需要修改 传入目录参数
     def run(self):
-        db_data = get_db_defect_data(targetDir)  # 获取数据
-        output_excel(db_data)  # 输出excel
+        mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
+        mulYiedTime = get_yied_dur_data(targetDir)
+        output_excel(mulVerDefects, mulYiedTime)  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 
 
@@ -35,7 +36,6 @@ class MainWin:
         self.ui = QUiLoader().load('ui/mainwin.ui')
         self.InitUI()
 
-    
     def InitUI(self):
         self.ui.pathLineEdit.setText(targetDir)
         self.ui.pathBut.clicked.connect(self.SelectPath)
@@ -49,11 +49,13 @@ class MainWin:
         self.folderPath = FileDialog.getExistingDirectory(mW, 'Select Folder')
         if self.folderPath:
             self.ui.pathLineEdit.setText(self.folderPath)
-            self.ui.logPlainTextEdit.appendPlainText(f'{self.GetNowTime()}目录已更新为 {self.folderPath}')
+            self.ui.logPlainTextEdit.appendPlainText(
+                f'{self.GetNowTime()}目录已更新为 {self.folderPath}')
 
     def StartGenExcelThread(self):
         self.ui.excelBut.setDisabled(True)
-        self.ui.logPlainTextEdit.appendPlainText(str(self.GetNowTime()) + "正在开始查询数据，请稍等")
+        self.ui.logPlainTextEdit.appendPlainText(
+            str(self.GetNowTime()) + "正在开始查询数据，请稍等")
 
         self.thread = Worker()
         self.thread.queryDbFinishedStatu.connect(self.FinishedGenExcelThead)
@@ -61,7 +63,8 @@ class MainWin:
 
     def FinishedGenExcelThead(self):
         self.ui.excelBut.setDisabled(False)
-        self.ui.logPlainTextEdit.appendPlainText(str(self.GetNowTime()) + "完成查询")
+        self.ui.logPlainTextEdit.appendPlainText(
+            str(self.GetNowTime()) + "完成查询")
         self.thread.quit()
 
     def GetNowTime(self):

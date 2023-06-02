@@ -121,7 +121,7 @@ def execute_sql(db_file_path, sql):
     print('用时:{}秒'.format(end-start))
     return sql_result
 
-@time_it
+# @time_it
 def get_yied_dur_data(targetDir):
     dbFiles_path_dict = get_file_path(targetDir)
     ver_yied_dur_dict = {}
@@ -154,7 +154,5 @@ def get_yied_dur_data(targetDir):
             lot_yied_dur_list[2] = duration
             mul_ver_data_list.append(lot_yied_dur_list)
             ver_yied_dur_dict[data_set] = mul_ver_data_list
-    print(ver_yied_dur_dict)
-    return ver_yied_dur_dict
 
-            
+    return ver_yied_dur_dict
