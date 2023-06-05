@@ -6,7 +6,7 @@ from openpyxl.chart import LineChart, Reference, Series
 from openpyxl.styles.colors import Color
 
 
-def output_excel(mul_version_defects_dict, ver_yied_dur_dict):
+def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
 
     outputPath = ".\\output"
     nowTime = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
@@ -127,8 +127,8 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict):
         ws.cell(row=1, column=editCol).border = black_border
         ws.cell(row=1, column=editCol).hyperlink = link
 
-    #! 现在假设用第一个批次号作版本插入的列表  后面需要传入所有版本的列表
-    DATAVER = [i[0] for i in GETYieldTime[yieldTimeKey[0]]]  # 存入所有版本号
+
+    DATAVER = ver_list  #* 存入所有版本号
 
     # 开始插入每个版本信息 从二行开始插入
     for row in range(0, len(DATAVER), 1):
@@ -180,7 +180,7 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict):
 
     # * 第二部分
     BottomRow = ws.max_row+2
-    ws.cell(row=BottomRow, column=1).value = "时间"
+    ws.cell(row=BottomRow, column=1).value = "耗时"
     ws.cell(row=BottomRow, column=1).fill = blue_fill
     ws.cell(row=BottomRow, column=1).border = black_border
 
@@ -216,13 +216,9 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict):
 
             # 判断该良率版本是否列相同
             if DATAVER[row] == specificYieldTime[insertNu][0]:
-                minutes, seconds = specificYieldTime[insertNu][2].split("分")
-                seconds = seconds.rstrip("秒")
-                time_decimal = float(minutes) + float(seconds) / 60
-                value = "{:.2f}".format(time_decimal)
 
                 ws.cell(row=editRow,
-                        column=editCol).value = float(value)
+                        column=editCol).value = float(specificYieldTime[insertNu][2])
                 #! 增加超链接功能
                 # ws.cell(row=editRow, column=editCol).style = "Hyperlink"
                 # link = fr''
@@ -235,14 +231,14 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict):
     lineChart2 = LineChart()
     chartData2 = Reference(ws, min_row=BottomRow, max_row=ws.max_row,
                            min_col=2, max_col=ws.max_column)
-    titleData2 = Reference(ws, min_row=BottomRow, max_row=ws.max_row,
+    titleData2 = Reference(ws, min_row=int(BottomRow+1), max_row=ws.max_row,
                            min_col=1, max_col=1)
 
     series2 = Series(chartData2)
     series2.marker
 
     # todo from_rows=False 默认以没一列为数据系列
-    lineChart2.title = f'汇总时间报告 单位时间'
+    lineChart2.title = f'汇总时间报告 单位(s)'
     lineChart2.add_data(chartData2, from_rows=False, titles_from_data=True)
     lineChart2.set_categories(titleData2)
     ws.add_chart(lineChart2, f'F{ws.max_column+20}')

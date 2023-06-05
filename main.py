@@ -26,7 +26,7 @@ class Worker(QThread):
         mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
         mulYiedTime = get_yied_dur_data(targetDir)[0]  
         ver_list = get_yied_dur_data(targetDir)[1]  #版本
-        output_excel(mulVerDefects, mulYiedTime)  # 输出excel
+        output_excel(mulVerDefects, mulYiedTime,ver_list)  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 
 
