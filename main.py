@@ -24,7 +24,8 @@ class Worker(QThread):
     # ! 后期这里需要修改 传入目录参数
     def run(self):
         mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
-        mulYiedTime = get_yied_dur_data(targetDir)
+        mulYiedTime = get_yied_dur_data(targetDir)[0]  
+        ver_list = get_yied_dur_data(targetDir)[1]  #版本
         output_excel(mulVerDefects, mulYiedTime)  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 

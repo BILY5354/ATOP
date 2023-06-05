@@ -125,6 +125,7 @@ def execute_sql(db_file_path, sql):
 def get_yied_dur_data(targetDir):
     dbFiles_path_dict = get_file_path(targetDir)
     ver_yied_dur_dict = {}
+    ver_list = []
     for data_set in dbFiles_path_dict:
         dbFile_path_list = dbFiles_path_dict[data_set]
         mul_ver_data_list = []
@@ -133,6 +134,8 @@ def get_yied_dur_data(targetDir):
             db_file_path_split = db_file_path.split('\\')
             # 版本号
             ver_id = db_file_path_split[-2]
+            if ver_id not in ver_list:
+                ver_list.append(ver_id)
             db_file_path = Path(db_file_path)
             sql = "select startTime,endTime,runAttrib from REP_INST LIMIT 1"
             print(db_file_path)
@@ -147,12 +150,11 @@ def get_yied_dur_data(targetDir):
             yied_float = good_count/total_count
             yied = "%.2f%%" % (yied_float * 100)
             duration_seconds = (endTime - startTime).seconds
-            m,s = divmod(duration_seconds,60)
-            duration = str(m) + '分' + str(s) + '秒'
+            # m,s = divmod(duration_seconds,60)
+            # duration = str(m) + '分' + str(s) + '秒'
             lot_yied_dur_list[0] = ver_id
             lot_yied_dur_list[1] = yied
-            lot_yied_dur_list[2] = duration
+            lot_yied_dur_list[2] = int(duration_seconds)
             mul_ver_data_list.append(lot_yied_dur_list)
             ver_yied_dur_dict[data_set] = mul_ver_data_list
-
-    return ver_yied_dur_dict
+    return ver_yied_dur_dict,ver_list
