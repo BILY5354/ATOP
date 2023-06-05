@@ -1,10 +1,4 @@
-#pyc文件不加入版本控制
+#蹇界暐涓嬪垪鏂囦欢
 __pycache__
-
-
 *.pyc
-
-
-
-#output文件夹
 output

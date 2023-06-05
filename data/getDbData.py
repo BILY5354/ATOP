@@ -94,7 +94,7 @@ def time_it(func):
         start = time.time()
         func(*args, **kwargs)
         end = time.time()
-        print('用时:{}秒'.format(end-start))
+        # print('用时:{}秒'.format(end-start))
     return inner
 
 def execute_sql(db_file_path, sql):
@@ -118,7 +118,7 @@ def execute_sql(db_file_path, sql):
     conn.close()
     
     end = time.time()
-    print('用时:{}秒'.format(end-start))
+    # print('用时:{}秒'.format(end-start))
     return sql_result
 
 # @time_it
@@ -138,7 +138,7 @@ def get_yied_dur_data(targetDir):
                 ver_list.append(ver_id)
             db_file_path = Path(db_file_path)
             sql = "select startTime,endTime,runAttrib from REP_INST LIMIT 1"
-            print(db_file_path)
+            # print(db_file_path)
             sql_res = execute_sql(db_file_path, sql)
             result_sql = sql_res[0]
             startTime = parse(result_sql[0])
