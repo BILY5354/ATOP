@@ -1,5 +1,10 @@
-output/test1.xlsx
-model/__pycache__
-output/test1.xlsx
+#pyc文件不加入版本控制
+__pycache__
+
+
+*.pyc
+
+
+
+#output文件夹
 output
-model\__pycache__
