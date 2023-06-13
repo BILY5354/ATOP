@@ -15,7 +15,7 @@ targetDir = r'\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3'
 
 # 将查询数据库放入子线程中运行
 class Worker(QThread):
-    # 定义查询数据库的信息
+    # 定义查询数据库的信號
     queryDbFinishedStatu = Signal()
 
     def __init__(self):
@@ -24,9 +24,9 @@ class Worker(QThread):
     # ! 后期这里需要修改 传入目录参数
     def run(self):
         mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
-        mulYiedTime = get_yied_dur_data(targetDir)[0]  
+        mulYiedTime = get_yied_dur_data(targetDir)[0]
         ver_list = get_yied_dur_data(targetDir)[1]  #版本
-        output_excel(mulVerDefects, mulYiedTime,ver_list)  # 输出excel
+        output_excel(mulVerDefects, mulYiedTime,ver_list, get_file_path(targetDir))  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 
 
