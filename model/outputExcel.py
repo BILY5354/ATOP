@@ -6,7 +6,7 @@ from openpyxl.chart import LineChart, Reference, Series
 from openpyxl.styles.colors import Color
 
 
-def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
+def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list, target_dir):
 
     outputPath = ".\\output"
     nowTime = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
@@ -26,7 +26,7 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
 
     ws = wb.active
     ws.title = "汇总表格"  # 将第一个改名
-    # 有几个数据集 创建多少个
+    # 有几个数据集 创建多少个工作簿
     for i in range(0, DATASETNU, 1):
         wb.create_sheet(f'{getDKEY[i]}')
 
@@ -133,7 +133,7 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
     # 开始插入每个版本信息 从二行开始插入
     for row in range(0, len(DATAVER), 1):
         editRow = int(2+row)  # 从第二行开始操作
-        link = fr"\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3\{DATAVER[row]}\SaveFile.txt"
+        # link = fr"\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3\{DATAVER[row]}\SaveFile.txt"
         ws.cell(row=editRow, column=1).value = DATAVER[row]
         ws.cell(row=editRow, column=1).fill = yellow_fill
         ws.cell(row=editRow, column=1).border = black_border
@@ -153,9 +153,9 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
                 value = float(specificYieldTime[insertNu][1].strip('%')) / 100
                 ws.cell(row=editRow, column=editCol).value = value
                 # #! 是否必要 增加超链接功能
-                # ws.cell(row=editRow, column=editCol).style = "Hyperlink"
-                # link = fr''
-                # ws.cell(row=editRow,column=editCol).hyperlink = link
+                ws.cell(row=editRow, column=editCol).style = "Hyperlink"
+                link = f'{target_dir[yieldTimeKey[col]][insertNu]}'.replace(r'\\192.168.0.11\Data', r'Y:', 1)
+                ws.cell(row=editRow, column=editCol).hyperlink = link
                 insertNu += 1
             else:
                 # print(f'row{editRow} col{editCol}')
@@ -178,7 +178,7 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
     lineChart.y_axis.scaling.max = 1  # 设置Y轴  最大值
     ws.add_chart(lineChart, f'F{ws.max_column+6}')
 
-    # * 第二部分
+    # * 第二部分 总表
     BottomRow = ws.max_row+2
     ws.cell(row=BottomRow, column=1).value = "耗时"
     ws.cell(row=BottomRow, column=1).fill = blue_fill
@@ -220,9 +220,9 @@ def output_excel(mul_version_defects_dict, ver_yied_dur_dict, ver_list):
                 ws.cell(row=editRow,
                         column=editCol).value = float(specificYieldTime[insertNu][2])
                 #! 增加超链接功能
-                # ws.cell(row=editRow, column=editCol).style = "Hyperlink"
-                # link = fr''
-                # ws.cell(row=editRow,column=editCol).hyperlink = link
+                ws.cell(row=editRow, column=editCol).style = "Hyperlink"
+                link = f'{target_dir[yieldTimeKey[col]][insertNu]}'.replace(r'\\192.168.0.11\Data', r'Y:', 1)
+                ws.cell(row=editRow,column=editCol).hyperlink = link
                 insertNu += 1
             else:
                 continue
