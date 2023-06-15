@@ -72,16 +72,16 @@ def get_db_defect_data(targetDir):
                 pre_defects_list = mul_version_defects_dict[data_set]
                 for def_dict in pre_defects_list:
                     pre_id = def_dict['id']
-                    pre_name = def_dict['name']
                     pre_ver_list = def_dict['ver']
                     if pre_id not in defect_id_list:
-                        pre_ver_list.append(0)
+                        zero_dict = {}
+                        zero_dict[ver_id] = 0
+                        pre_ver_list.append(zero_dict)
                     else:
                         for defect_list in file_defect_data_list:
                             ver_name_count_dict = {}
                             defect_split = defect_list.split(',')
                             id = defect_split[0]
-                            name = defect_split[1]
                             count = int(defect_split[2])
                             if (pre_id == id):
                                 ver_name_count_dict[ver_id] = count
