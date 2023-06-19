@@ -6,6 +6,7 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import Signal, QThread
 
 from model.outputExcel import output_excel
+from data.getFilePath import get_specific_ver_vrp
 from data.getDbData import *
 
 
@@ -25,8 +26,8 @@ class Worker(QThread):
     def run(self):
         mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
         mulYiedTime = get_yied_dur_data(targetDir)[0]
-        ver_list = get_yied_dur_data(targetDir)[1]  #版本
-        output_excel(mulVerDefects, mulYiedTime,ver_list, get_file_path(targetDir))  # 输出excel
+        ver_list = get_yied_dur_data(targetDir)[1]  # 版本
+        output_excel(mulVerDefects, mulYiedTime, ver_list, get_file_path(targetDir), get_specific_ver_vrp(targetDir))  # 输出excel
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 
 
