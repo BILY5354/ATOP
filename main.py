@@ -11,8 +11,8 @@ from data.getDbData import *
 
 
 # 目标目录
-targetDir = r'\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3'
-
+# targetDir = r'\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3'  # 格润4#
+targetDir = r'\\192.168.0.130\gerun\日常批量仿真'
 
 # 将查询数据库放入子线程中运行
 class Worker(QThread):
@@ -27,7 +27,8 @@ class Worker(QThread):
         mulVerDefects = get_db_defect_data(targetDir)  # 获取数据
         mulYiedTime = get_yied_dur_data(targetDir)[0]
         ver_list = get_yied_dur_data(targetDir)[1]  # 版本
-        output_excel(mulVerDefects, mulYiedTime, ver_list, get_file_path(targetDir), get_specific_ver_vrp(targetDir))  # 输出excel
+        # 输出excel
+        output_excel(mulVerDefects, mulYiedTime, ver_list, get_file_path(targetDir), get_specific_ver_vrp(targetDir))
         self.queryDbFinishedStatu.emit()  # 发送完成信号
 
 

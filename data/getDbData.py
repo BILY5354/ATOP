@@ -128,7 +128,6 @@ def execute_sql(db_file_path, sql):
 
 # @time_it
 
-
 def get_yied_dur_data(targetDir):
     dbFiles_path_dict = get_file_path(targetDir)
     ver_yied_dur_dict = {}
