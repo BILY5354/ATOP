@@ -9,7 +9,8 @@ from functools import wraps
 
 
 def get_db_defect_data(targetDir):
-    dbFiles_path_dict = get_file_path(targetDir)
+    total_files_info = get_file_path(targetDir)
+    dbFiles_path_dict = total_files_info['totalBatchVerPath']
     mul_version_defects_dict = {}
 
     for data_set in dbFiles_path_dict:
@@ -87,7 +88,7 @@ def get_db_defect_data(targetDir):
                                 ver_name_count_dict[ver_id] = count
                                 pre_ver_list.append(ver_name_count_dict)
 
-    return mul_version_defects_dict
+    return mul_version_defects_dict, total_files_info
 
 
 def time_it(func):
@@ -129,7 +130,8 @@ def execute_sql(db_file_path, sql):
 # @time_it
 
 def get_yied_dur_data(targetDir):
-    dbFiles_path_dict = get_file_path(targetDir)
+    total_files_info = get_file_path(targetDir)
+    dbFiles_path_dict = total_files_info['totalBatchVerPath']
     ver_yied_dur_dict = {}
     ver_list = []
     for data_set in dbFiles_path_dict:

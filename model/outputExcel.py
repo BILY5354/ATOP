@@ -4,18 +4,18 @@ from openpyxl import Workbook
 from openpyxl.chart import LineChart, Reference, Series
 from tool.stytle import CellColor
 
-
 """ 
     total_batch_dict 所有批次的缺陷
-    total_yield_dur_dict
-    total_ver_list
-    target_dir
+    total_yield_dur_dict 所有良率与运行时间
+    total_ver_list 所有版本信息
+    total_batch_ver_path_dict 所有的db3文件地址
+    total_vrp_file_dict 所有vrp文件名
+    total_ver_nu_of_batch_dict 所有各版本的批次数量信息
 """
 
 
-def output_excel(total_batch_dict, total_yield_dur_dict,
-                 total_ver_list, target_dir, ver_files):
-
+def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
+                 total_batch_ver_path_dict, total_vrp_file_dict, total_ver_nu_of_batch_dict):
     output_path = ".\\output"
     now_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     create_new_folder_name = os.path.join(output_path, now_time)
@@ -23,15 +23,22 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
 
     # 将字典所有键存入列表中 存的是数据集名称
     total_batch_names = [i for i in total_batch_dict.keys()]
-    total_yield_dur_names = [i for i in total_yield_dur_dict.keys()] 
+    total_yield_dur_names = [i for i in total_yield_dur_dict.keys()]
 
     wb = Workbook()
     number_of_total_batch = len(total_batch_dict)  # 数据集数量
     number_of_total_yield_dur = len(total_yield_dur_dict)
 
+    # 汇总(首页)表格的单元格修改范围
+    # aggregation_sheet_edit_range = {
+    #     'yieldCellRange': {'row': len(total_ver_list), 'col': number_of_total_batch},
+    #     'durationCellRange': {'row': len(total_ver_list), 'col': number_of_total_yield_dur},
+    #     'batchNuCellRange': {'row': 1, 'col': len(total_ver_nu_of_batch_dict)}
+    # }
+
     ws = wb.active
     ws.title = "汇总表格"  # 将第一个改名
-    # 有几个数据集 创建多少个工作簿
+    # 根据数据集 创建工作簿
     for i in range(0, number_of_total_batch, 1):
         wb.create_sheet(f'{total_batch_names[i]}')
 
@@ -57,7 +64,7 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
         # 插入 第一列数据集版本号
         current_cell_index = 1
         for row in range(0, len(current_batch_ver_list), 1):
-            edit_row = int(2+row)  # 从第二行开始操作
+            edit_row = int(2 + row)  # 从第二行开始操作
             ws.cell(row=edit_row,
                     column=1).value = f'{list(current_batch_ver_list[row])[0]}'
             ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
@@ -71,8 +78,8 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
             for col in range(0, len(current_batch), 1):
                 # 特定数据集版本中的字典(数量为1)
                 specificDataSetVer = current_batch[col]['ver'][current_cell_index]
-                edit_row = int(2+row)  # 行数从第二行开始操作
-                edit_col = int(2+col)  # 列从第二列开始操作
+                edit_row = int(2 + row)  # 行数从第二行开始操作
+                edit_col = int(2 + col)  # 列从第二列开始操作
 
                 # 获取对应数据集缺陷版本的数量
                 specificKey = [i for i in specificDataSetVer.keys()][0]
@@ -84,20 +91,20 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
             current_cell_index += 1
 
         # 开始画折线图
-        lineChart = LineChart()
-        chartData = Reference(ws, min_row=1, max_row=ws.max_row,
-                              min_col=2, max_col=ws.max_column)
-        titleData = Reference(ws, min_row=2, max_row=ws.max_row,
-                              min_col=1, max_col=1)
+        line_chart = LineChart()
+        line_chart_data = Reference(ws, min_row=1, max_row=ws.max_row,
+                                    min_col=2, max_col=ws.max_column)
+        line_chart_title = Reference(ws, min_row=2, max_row=ws.max_row,
+                                     min_col=1, max_col=1)
 
-        series = Series(chartData)
+        series = Series(line_chart_data)
         series.marker
 
         # todo from_rows=False 默认以没一列为数据系列
-        lineChart.title = f'{current_batch_name}报告'
-        lineChart.add_data(chartData, from_rows=False, titles_from_data=True)
-        lineChart.set_categories(titleData)
-        ws.add_chart(lineChart, f'F{ws.max_row+10}')
+        line_chart.title = f'{current_batch_name}报告'
+        line_chart.add_data(line_chart_data, from_rows=False, titles_from_data=True)
+        line_chart.set_categories(line_chart_title)
+        ws.add_chart(line_chart, f'F{ws.max_row + 10}')
 
         # 插入对应的vrp文件信息
         edit_col = ws.max_column + 1
@@ -105,9 +112,9 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
         ws.cell(row=1, column=edit_col).fill = CellColor.green_fill
         ws.cell(row=1, column=edit_col).border = CellColor.black_border
         # 新增加入对应版本的vrp信息
-        for row in range(0, len(ver_files[current_batch_name]), 1):
+        for row in range(0, len(total_vrp_file_dict[current_batch_name]), 1):
             edit_row = int(2 + row)  # 从第二行开始操作
-            ws.cell(row=edit_row, column=edit_col).value = ver_files[current_batch_name][row]
+            ws.cell(row=edit_row, column=edit_col).value = total_vrp_file_dict[current_batch_name][row]
 
     # * 插入汇总表格数据
     ws = wb["汇总表格"]
@@ -130,7 +137,7 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
 
     # 开始插入每个版本信息 从二行开始插入
     for row in range(0, len(total_ver_list), 1):
-        edit_row = int(2+row)  # 从第二行开始操作
+        edit_row = int(2 + row)  # 从第二行开始操作
         # link = fr"\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3\{total_ver_list[row]}\SaveFile.txt"
         ws.cell(row=edit_row, column=1).value = total_ver_list[row]
         ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
@@ -142,8 +149,8 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
 
         insertNu = 0  # 单个数据集中 插入的良率位置 从0开始
         for row in range(0, len(total_ver_list), 1):
-            edit_row = int(2+row)
-            edit_col = int(2+col)
+            edit_row = int(2 + row)
+            edit_col = int(2 + col)
 
             # 判断该良率版本是否列相同
             if total_ver_list[row] == current_yield_dur[insertNu][0]:
@@ -151,7 +158,8 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
                 ws.cell(row=edit_row, column=edit_col).value = value
                 # #! 是否必要 增加超链接功能
                 ws.cell(row=edit_row, column=edit_col).style = "Hyperlink"
-                link = f'{target_dir[total_yield_dur_names[col]][insertNu]}'.replace(r'\\192.168.0.11\Data', r'Y:', 1)
+                link = f'{total_batch_ver_path_dict[total_yield_dur_names[col]][insertNu]}'.replace(
+                    r'\\192.168.0.11\Data', r'Y:', 1)
                 ws.cell(row=edit_row, column=edit_col).hyperlink = link
                 insertNu += 1
             else:
@@ -159,44 +167,43 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
                 continue
 
     # 开始画折线图
-    lineChart = LineChart()
-    chartData = Reference(ws, min_row=1, max_row=ws.max_row,
-                          min_col=2, max_col=ws.max_column)
-    titleData = Reference(ws, min_row=2, max_row=ws.max_row,
-                          min_col=1, max_col=1)
+    line_chart2 = LineChart()
+    line_chart2_data = Reference(ws, min_row=1, max_row=ws.max_row,
+                                 min_col=2, max_col=ws.max_column)
+    line_chart2_title = Reference(ws, min_row=2, max_row=ws.max_row,
+                                  min_col=1, max_col=1)
 
-    series = Series(chartData)
+    series = Series(line_chart2_data)
     series.marker
 
     # todo from_rows=False 默认以没一列为数据系列
-    lineChart.title = f'汇总良率报告 单位(%)'
-    lineChart.add_data(chartData, from_rows=False, titles_from_data=True)
-    lineChart.set_categories(titleData)
-    lineChart.y_axis.scaling.max = 1  # 设置Y轴  最大值
-    ws.add_chart(lineChart, f'F{ws.max_column+6}')
+    line_chart2.title = f'汇总良率报告 单位(%)'
+    line_chart2.add_data(line_chart2_data, from_rows=False, titles_from_data=True)
+    line_chart2.set_categories(line_chart2_title)
+    line_chart2.y_axis.scaling.max = 1  # 设置Y轴  最大值
+    ws.add_chart(line_chart2, f'F{ws.max_column + 6}')
 
-    # * 第二部分 总表
-    BottomRow = ws.max_row+2
-    ws.cell(row=BottomRow, column=1).value = "耗时(s)"
-    ws.cell(row=BottomRow, column=1).fill = CellColor.blue_fill
-    ws.cell(row=BottomRow, column=1).border = CellColor.black_border
+    # * 总表 第二部分
+    bottom_row = ws.max_row + 2
+    ws.cell(row=bottom_row, column=1).value = "耗时(s)"
+    ws.cell(row=bottom_row, column=1).fill = CellColor.blue_fill
+    ws.cell(row=bottom_row, column=1).border = CellColor.black_border
 
     # 开始插入批次信息 从第二列开始插入
     for col in range(0, number_of_total_yield_dur, 1):
         # 修改下超链接
-        aa = "数据集1"
-        link = "test1.xlsx"+f"#{total_batch_names[col]}!A1"
+        link = "test1.xlsx" + f"#{total_batch_names[col]}!A1"
         edit_col = int(2 + col)
         ws.cell(
-            row=BottomRow, column=edit_col).value = total_yield_dur_names[col]
-        ws.cell(row=BottomRow, column=edit_col).style = "Hyperlink"
-        ws.cell(row=BottomRow, column=edit_col).fill = CellColor.green_fill
-        ws.cell(row=BottomRow, column=edit_col).border = CellColor.black_border
-        ws.cell(row=BottomRow, column=edit_col).hyperlink = link
+            row=bottom_row, column=edit_col).value = total_yield_dur_names[col]
+        ws.cell(row=bottom_row, column=edit_col).style = "Hyperlink"
+        ws.cell(row=bottom_row, column=edit_col).fill = CellColor.green_fill
+        ws.cell(row=bottom_row, column=edit_col).border = CellColor.black_border
+        ws.cell(row=bottom_row, column=edit_col).hyperlink = link
 
     # 开始插入每个版本信息 从二行开始插入
     for row in range(0, len(total_ver_list), 1):
-        edit_row = int(BottomRow+row+1)  # 从底部加1行插入
+        edit_row = int(bottom_row + row + 1)  # 从底部加1行插入
         ws.cell(row=edit_row,
                 column=1).value = total_ver_list[row]
         ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
@@ -208,8 +215,8 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
 
         insertNu = 0  # 单个数据集中 插入的良率位置 从0开始
         for row in range(0, len(total_ver_list), 1):
-            edit_row = int(BottomRow+row+1)
-            edit_col = int(2+col)
+            edit_row = int(bottom_row + row + 1)
+            edit_col = int(2 + col)
 
             # 判断该良率版本是否列相同
             if total_ver_list[row] == current_yield_dur[insertNu][0]:
@@ -217,28 +224,69 @@ def output_excel(total_batch_dict, total_yield_dur_dict,
                 ws.cell(row=edit_row,
                         column=edit_col).value = float(current_yield_dur[insertNu][2])
                 ws.cell(row=edit_row, column=edit_col).style = "Hyperlink"
-                db3_file_name = target_dir[total_yield_dur_names[col]][insertNu].split('\\')[-1]
+                db3_file_name = total_batch_ver_path_dict[total_yield_dur_names[col]][insertNu].split('\\')[-1]
                 link = "http://192.168.0.101:8022/db_file_summary/0/" + db3_file_name
-                ws.cell(row=edit_row,column=edit_col).hyperlink = link
+                ws.cell(row=edit_row, column=edit_col).hyperlink = link
                 insertNu += 1
             else:
                 continue
 
     # 开始画折线图
     dur_line_chart = LineChart()
-    chartData2 = Reference(ws, min_row=BottomRow, max_row=ws.max_row,
-                           min_col=2, max_col=ws.max_column)
-    titleData2 = Reference(ws, min_row=int(BottomRow+1), max_row=ws.max_row,
-                           min_col=1, max_col=1)
+    dur_line_chart_data = Reference(ws, min_row=bottom_row, max_row=ws.max_row,
+                                    min_col=2, max_col=ws.max_column)
+    dur_line_chart_title = Reference(ws, min_row=int(bottom_row + 1), max_row=ws.max_row,
+                                     min_col=1, max_col=1)
 
-    series2 = Series(chartData2)
+    series2 = Series(dur_line_chart_data)
     series2.marker
 
     # todo from_rows=False 默认以每一列为数据系列
     dur_line_chart.title = f'汇总时间报告 单位(s)'
-    dur_line_chart.add_data(chartData2, from_rows=False, titles_from_data=True)
-    dur_line_chart.set_categories(titleData2)
-    ws.add_chart(dur_line_chart, f'F{ws.max_column+20}')
+    dur_line_chart.add_data(dur_line_chart_data, from_rows=False, titles_from_data=True)
+    dur_line_chart.set_categories(dur_line_chart_title)
+    ws.add_chart(dur_line_chart, f'F{ws.max_column + 34}')
+
+    # * 总表 第三部分 各版本批次号数量信息
+    bottom_row = ws.max_row + 2
+    ws.cell(row=bottom_row, column=1).value = "各版本批次数量"
+    ws.cell(row=bottom_row, column=1).fill = CellColor.blue_fill
+    ws.cell(row=bottom_row, column=1).border = CellColor.black_border
+
+    ws.cell(
+        row=bottom_row, column=2).value = '批次数量(个)'
+    ws.cell(row=bottom_row, column=2).fill = CellColor.green_fill
+    ws.cell(row=bottom_row, column=2).border = CellColor.black_border
+
+    # 插入每个版本信息
+    for row in range(0, len(total_ver_list), 1):
+        edit_row = int(bottom_row + row + 1)  # 从底部加1行插入
+        ws.cell(row=edit_row,
+                column=1).value = total_ver_list[row]
+        ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
+        ws.cell(row=edit_row, column=1).border = CellColor.black_border
+
+    # 插入每个版本的批次数量
+    for index in range(0, len(total_ver_list), 1):
+        edit_row = int(bottom_row + index + 1)  # 从底部加1行插入
+        ws.cell(row=edit_row,
+                column=2).value = total_ver_nu_of_batch_dict[total_ver_list[index]]
+
+    # 画图
+    nu_of_batch_chart = LineChart()
+    nu_of_batch_chart_data = Reference(ws, min_row=bottom_row, max_row=ws.max_row,
+                                       min_col=2, max_col=2)
+    nu_of_batch_chart_title = Reference(ws, min_row=int(bottom_row+1), max_row=ws.max_row,
+                                        min_col=1, max_col=1)
+
+    series = Series(nu_of_batch_chart_data)
+    series.marker
+
+    # todo from_rows=False 默认以没一列为数据系列
+    nu_of_batch_chart.title = f'各版本批次数量 单位(个)'
+    nu_of_batch_chart.add_data(nu_of_batch_chart_data, from_rows=False, titles_from_data=True)
+    nu_of_batch_chart.set_categories(nu_of_batch_chart_title)
+    ws.add_chart(nu_of_batch_chart, f'F{ws.max_column + 18}')
 
     os.makedirs(fr'{create_new_folder_name}')
     wb.save(output_excel_path)
