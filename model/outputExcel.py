@@ -5,7 +5,7 @@ from openpyxl.chart import LineChart, Reference, Series
 from tool.stytle import CellColor
 
 """ 
-    total_batch_dict 所有批次的缺陷
+    total_version_defects_dict 所有批次的缺陷
     total_yield_dur_dict 所有良率与运行时间
     total_ver_list 所有版本信息
     total_batch_ver_path_dict 所有的db3文件地址
@@ -14,7 +14,7 @@ from tool.stytle import CellColor
 """
 
 
-def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
+def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_list,
                  total_batch_ver_path_dict, total_vrp_file_dict, total_ver_nu_of_batch_dict):
     output_path = ".\\output"
     now_time = datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
@@ -22,11 +22,11 @@ def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
     output_excel_path = fr"{create_new_folder_name}\test1.xlsx"
 
     # 将字典所有键存入列表中 存的是数据集名称
-    total_batch_names = [i for i in total_batch_dict.keys()]
+    total_batch_names = [i for i in total_version_defects_dict.keys()]
     total_yield_dur_names = [i for i in total_yield_dur_dict.keys()]
 
     wb = Workbook()
-    number_of_total_batch = len(total_batch_dict)  # 数据集数量
+    number_of_total_batch = len(total_version_defects_dict)  # 数据集数量
     number_of_total_yield_dur = len(total_yield_dur_dict)
 
     # 汇总(首页)表格的单元格修改范围
@@ -47,11 +47,11 @@ def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
         current_batch_name = total_batch_names[current_dataset_nu]  # 遍历的批次号名字
         ws = wb[f'{current_batch_name}']  # 选中对应的工作簿
 
-        if len(total_batch_dict[current_batch_name]) == 0:
+        if len(total_version_defects_dict[current_batch_name]) == 0:
             continue
 
-        current_batch = total_batch_dict[current_batch_name]  # 当前(遍历)数据集列表
-        current_batch_ver_list = current_batch[0]['ver']  # 当前(遍历)数据集对应版本数列表
+        current_batch = total_version_defects_dict[current_batch_name]  # 当前(遍历)数据集列表
+        # current_batch_ver_list = current_batch[0]['ver']  # 当前(遍历)数据集对应版本数列表
 
         # 开始插入缺陷名称 注意从第二列开始插入
         for col in range(0, len(current_batch), 1):
@@ -63,32 +63,39 @@ def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
 
         # 插入 第一列数据集版本号
         current_cell_index = 1
-        for row in range(0, len(current_batch_ver_list), 1):
+        for row in range(0, len(total_ver_list), 1):
             edit_row = int(2 + row)  # 从第二行开始操作
             ws.cell(row=edit_row,
-                    column=1).value = f'{list(current_batch_ver_list[row])[0]}'
+                    column=1).value = total_ver_list[row]
             ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
             ws.cell(row=edit_row, column=1).border = CellColor.black_border
             current_cell_index += 1
 
-        # 开始插入数据 按行插入
-        current_cell_index = 0  # 对应版本号 从0开始
-        # todo total_batch_dict[current_dataset_nu][0]['ver'] 中的 0 固定死因为每个括号包含的版本数是一样的
-        for row in range(0, len(current_batch_ver_list), 1):
-            for col in range(0, len(current_batch), 1):
-                # 特定数据集版本中的字典(数量为1)
-                specificDataSetVer = current_batch[col]['ver'][current_cell_index]
-                edit_row = int(2 + row)  # 行数从第二行开始操作
-                edit_col = int(2 + col)  # 列从第二列开始操作
+        # 插入数据 按先第一列然第二列插入 因为一列是一个缺陷
+        for index_of_defects in range(0, len(current_batch), 1):
+            # for col in range(0, len(current_batch[row]['ver']), 1):
+            current_batch_ver_index = 0  # 当前缺陷有多个版本 表示准备插入版本的下标
+            for i in range(0, len(total_ver_list), 1):
 
-                # 获取对应数据集缺陷版本的数量
-                specificKey = [i for i in specificDataSetVer.keys()][0]
+                edit_row = int(2 + i)  # 行数从第二行开始操作
+                edit_col = int(2 + index_of_defects)  # 列从第二列开始操作
 
-                ws.cell(row=edit_row,
-                        column=edit_col).value = specificDataSetVer[specificKey]
-                # print(specificDataSetVer)
+                # 避免准备插入版本的下标
+                if current_batch_ver_index < len(current_batch[index_of_defects]['ver']):
+                    # 特定数据集版本中的字典(数量为1)
+                    current_defect_id_ver_dict = current_batch[index_of_defects]['ver'][current_batch_ver_index]
+                    current_version_name = list(current_defect_id_ver_dict)[0]
 
-            current_cell_index += 1
+                if total_ver_list[i] == current_version_name:
+                    # 特定数据集版本中的字典(数量为1)
+                    current_defect_id_ver_dict = current_batch[index_of_defects]['ver'][current_batch_ver_index]
+                    ws.cell(row=edit_row, column=edit_col).value = \
+                        int(current_defect_id_ver_dict[current_version_name])
+                    current_batch_ver_index += 1
+                else:
+                    ws.cell(row=edit_row, column=edit_col).value = 0
+
+                # print(current_defect_id_ver_dict)
 
         # 开始画折线图
         line_chart = LineChart()
@@ -109,12 +116,22 @@ def output_excel(total_batch_dict, total_yield_dur_dict, total_ver_list,
         # 插入对应的vrp文件信息
         edit_col = ws.max_column + 1
         ws.cell(row=1, column=edit_col).value = "vrp文件"
-        ws.cell(row=1, column=edit_col).fill = CellColor.green_fill
+        ws.cell(row=1, column=edit_col).fill = CellColor.blue_fill
         ws.cell(row=1, column=edit_col).border = CellColor.black_border
+        # 当前批次所有vrp文件名字  所有vrp格式 {批次号:{版本号1:文件,版本号2:文件}...}
+        current_batch_vrp_file_name = [vN for vN in list(total_vrp_file_dict[current_batch_name])]
         # 新增加入对应版本的vrp信息
-        for row in range(0, len(total_vrp_file_dict[current_batch_name]), 1):
-            edit_row = int(2 + row)  # 从第二行开始操作
-            ws.cell(row=edit_row, column=edit_col).value = total_vrp_file_dict[current_batch_name][row]
+        current_cell_index = 0
+        for i in range(0, len(total_ver_list), 1):
+            edit_row = int(2 + i)  # 从第二行开始操作
+            name = current_batch_vrp_file_name[current_cell_index]
+            if total_ver_list[i] == name:
+                ws.cell(row=edit_row, column=edit_col).value = total_vrp_file_dict[current_batch_name][name]
+                current_cell_index += 1
+            else:
+                ws.cell(row=edit_row, column=edit_col).value = '此版本无跑仿真'
+                ws.cell(row=edit_row, column=edit_col).fill = CellColor.red_fill
+                ws.cell(row=edit_row, column=edit_col).border = CellColor.black_border
 
     # * 插入汇总表格数据
     ws = wb["汇总表格"]

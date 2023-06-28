@@ -25,11 +25,11 @@ class Worker(QThread):
 
     # ! 后期这里需要修改 传入目录参数
     def run(self):
-        total_batch_dict, total_query_filepath_info = get_db_defect_data(targetDir)  # 获取数据
-        total_yield_dict = get_yied_dur_data(targetDir)[0]  # 良率
+        total_version_defects_dict, total_query_filepath_info = get_db_defect_data(targetDir)  # 获取数据
+        total_yield_dur_dict = get_yied_dur_data(targetDir)[0]  # 良率
         total_ver_list = get_yied_dur_data(targetDir)[1]  # 版本
         # 输出excel
-        output_excel(total_batch_dict, total_yield_dict, total_ver_list,
+        output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_list,
                      total_query_filepath_info['totalBatchVerPath'],
                      total_query_filepath_info['totalVrpDict'],
                      get_number_of_batches(targetDir))

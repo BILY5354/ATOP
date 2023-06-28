@@ -19,3 +19,7 @@ class CellColor:
     blue = Color(rgb="00B0F0")
     blue_fill = PatternFill(start_color=blue,
                             end_color=blue, fill_type='solid')
+
+    red = Color(rgb="FF0000")
+    red_fill = PatternFill(start_color=red,
+                           end_color=red, fill_type='solid')
