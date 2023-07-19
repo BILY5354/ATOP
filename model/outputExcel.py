@@ -42,16 +42,15 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
     for i in range(0, number_of_total_batch, 1):
         wb.create_sheet(f'{total_batch_names[i]}')
 
-    # * 塞入数据 注意 current_dataset_nu 下标从 0 开始
+    # * 塞入数据current_dataset_nu下标从0开始
     for current_dataset_nu in range(0, number_of_total_batch, 1):
         current_batch_name = total_batch_names[current_dataset_nu]  # 遍历的批次号名字
         ws = wb[f'{current_batch_name}']  # 选中对应的工作簿
 
         if len(total_version_defects_dict[current_batch_name]) == 0:
-            continue
+            continue  # 该批次没有缺陷
 
         current_batch = total_version_defects_dict[current_batch_name]  # 当前(遍历)数据集列表
-        # current_batch_ver_list = current_batch[0]['ver']  # 当前(遍历)数据集对应版本数列表
 
         # 开始插入缺陷名称 注意从第二列开始插入
         for col in range(0, len(current_batch), 1):
@@ -62,14 +61,14 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
             ws.cell(row=1, column=edit_col).border = CellColor.black_border
 
         # 插入 第一列数据集版本号
-        current_cell_index = 1
+        insert_index = 1
         for row in range(0, len(total_ver_list), 1):
             edit_row = int(2 + row)  # 从第二行开始操作
             ws.cell(row=edit_row,
                     column=1).value = total_ver_list[row]
             ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
             ws.cell(row=edit_row, column=1).border = CellColor.black_border
-            current_cell_index += 1
+            insert_index += 1
 
         # 插入数据 按先第一列然第二列插入 因为一列是一个缺陷
         for index_of_defects in range(0, len(current_batch), 1):
@@ -121,13 +120,15 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
         # 当前批次所有vrp文件名字  所有vrp格式 {批次号:{版本号1:文件,版本号2:文件}...}
         current_batch_vrp_file_name = [vN for vN in list(total_vrp_file_dict[current_batch_name])]
         # 新增加入对应版本的vrp信息
-        current_cell_index = 0
+        insert_index = 0
         for i in range(0, len(total_ver_list), 1):
             edit_row = int(2 + i)  # 从第二行开始操作
-            name = current_batch_vrp_file_name[current_cell_index]
+            name = current_batch_vrp_file_name[insert_index]
             if total_ver_list[i] == name:
                 ws.cell(row=edit_row, column=edit_col).value = total_vrp_file_dict[current_batch_name][name]
-                current_cell_index += 1
+                insert_index += 1
+                if insert_index == len(current_batch_vrp_file_name):
+                    insert_index -= 1  # 因需遍历总vrp列表 总有批次批次没有跑满全部版本
             else:
                 ws.cell(row=edit_row, column=edit_col).value = '此版本无跑仿真'
                 ws.cell(row=edit_row, column=edit_col).fill = CellColor.red_fill
@@ -140,7 +141,7 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
     ws.cell(row=1, column=1).fill = CellColor.blue_fill
     ws.cell(row=1, column=1).border = CellColor.black_border
 
-    # 开始插入批次信息 从第二列开始插入
+    # 插入批次信息 从第二列往右插入
     for col in range(0, number_of_total_yield_dur, 1):
         # link = "test1.xlsx"+f"#{total_batch_names[col]}!A1"
         link = fr"Y:\GeRun\SecondaryWire\4#\VTSimulation\{total_batch_names[col]}"
@@ -152,36 +153,39 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
         ws.cell(row=1, column=edit_col).border = CellColor.black_border
         ws.cell(row=1, column=edit_col).hyperlink = link
 
-    # 开始插入每个版本信息 从二行开始插入
+    # 插入全部版本信息 从二行向下插入
     for row in range(0, len(total_ver_list), 1):
         edit_row = int(2 + row)  # 从第二行开始操作
-        # link = fr"\\192.168.0.11\Data\GeRun\SecondaryWire\4#\VT报告文件db3\{total_ver_list[row]}\SaveFile.txt"
         ws.cell(row=edit_row, column=1).value = total_ver_list[row]
         ws.cell(row=edit_row, column=1).fill = CellColor.yellow_fill
         ws.cell(row=edit_row, column=1).border = CellColor.black_border
 
-    # 开始插入每个批次对应的单元格信息
+    # 开始插入每个批次对应的单元格信息 以列向下(版本)然向右(批次)移动
     for col in range(0, number_of_total_yield_dur, 1):
         current_yield_dur = total_yield_dur_dict[total_yield_dur_names[col]]
 
-        insertNu = 0  # 单个数据集中 插入的良率位置 从0开始
+        insert_index = 0  # 现current_yield_dur中插入的位置 从0开始
+        # 这里需要遍历总ver_list让当前版本与其判断 而不是current_yield_dur
         for row in range(0, len(total_ver_list), 1):
             edit_row = int(2 + row)
             edit_col = int(2 + col)
 
             # 判断该良率版本是否列相同
-            if total_ver_list[row] == current_yield_dur[insertNu][0]:
-                value = float(current_yield_dur[insertNu][1].strip('%')) / 100
+            if total_ver_list[row] == current_yield_dur[insert_index][0]:
+                value = float(current_yield_dur[insert_index][1].strip('%')) / 100
                 ws.cell(row=edit_row, column=edit_col).value = value
                 # #! 是否必要 增加超链接功能
                 ws.cell(row=edit_row, column=edit_col).style = "Hyperlink"
-                link = f'{total_batch_ver_path_dict[total_yield_dur_names[col]][insertNu]}'.replace(
+                link = f'{total_batch_ver_path_dict[total_yield_dur_names[col]][insert_index]}'.replace(
                     r'\\192.168.0.11\Data', r'Y:', 1)
                 ws.cell(row=edit_row, column=edit_col).hyperlink = link
-                insertNu += 1
+                insert_index += 1
+                if insert_index == len(current_yield_dur):
+                    insert_index -= 1  # 因为遍历的总列表 总有批次没有跑满全部版本
             else:
-                # print(f'row{edit_row} col{edit_col}')
-                continue
+                ws.cell(row=edit_row, column=edit_col).value = '无跑仿真'
+                ws.cell(row=edit_row, column=edit_col).fill = CellColor.red_fill
+                ws.cell(row=edit_row, column=edit_col).border = CellColor.black_border
 
     # 开始画折线图
     line_chart2 = LineChart()
@@ -230,23 +234,28 @@ def output_excel(total_version_defects_dict, total_yield_dur_dict, total_ver_lis
     for col in range(0, number_of_total_yield_dur, 1):
         current_yield_dur = total_yield_dur_dict[total_yield_dur_names[col]]
 
-        insertNu = 0  # 单个数据集中 插入的良率位置 从0开始
+        insert_index = 0  # 单个数据集中 插入的良率位置 从0开始
         for row in range(0, len(total_ver_list), 1):
             edit_row = int(bottom_row + row + 1)
             edit_col = int(2 + col)
 
             # 判断该良率版本是否列相同
-            if total_ver_list[row] == current_yield_dur[insertNu][0]:
+            if total_ver_list[row] == current_yield_dur[insert_index][0]:
 
                 ws.cell(row=edit_row,
-                        column=edit_col).value = float(current_yield_dur[insertNu][2])
+                        column=edit_col).value = float(current_yield_dur[insert_index][2])
                 ws.cell(row=edit_row, column=edit_col).style = "Hyperlink"
-                db3_file_name = total_batch_ver_path_dict[total_yield_dur_names[col]][insertNu].split('\\')[-1]
-                link = "http://192.168.0.101:8022/db_file_summary/0/" + db3_file_name
+                db3_file_name = total_batch_ver_path_dict[total_yield_dur_names[col]][insert_index].split('\\')[-1]
+                link = "http://192.168.0.130:8022/db_file_summary/0/" + db3_file_name
                 ws.cell(row=edit_row, column=edit_col).hyperlink = link
-                insertNu += 1
+
+                insert_index += 1
+                if insert_index == len(current_yield_dur):
+                    insert_index -= 1  # 因为遍历的总列表 总有批次没有跑满全部版本
             else:
-                continue
+                ws.cell(row=edit_row, column=edit_col).value = '无跑仿真'
+                ws.cell(row=edit_row, column=edit_col).fill = CellColor.red_fill
+                ws.cell(row=edit_row, column=edit_col).border = CellColor.black_border
 
     # 开始画折线图
     dur_line_chart = LineChart()
